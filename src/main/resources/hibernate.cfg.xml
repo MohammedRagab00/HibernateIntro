@@ -1,20 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC
-  "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-  "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-  <session-factory>
-    <property name="connection.driver_class">oracle.jdbc.OracleDriver</property>
-    <property name="connection.url">jdbc:oracle:thin:@localhost:1522:xe</property>
-    <property name="connection.username">system</property>
-    <property name="connection.password">system</property>
-    <property name="dialect">org.hibernate.dialect.Oracle8iDialect</property>
-    <property name="enable_lazy_load_no_trans">true</property>
-    <property name="show_sql">true</property>
+<hibernate-configuration xmlns="http://www.hibernate.org/xsd/orm/cfg">
+    <session-factory>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/test</property>
+        <property name="hibernate.connection.username">Moham</property>
+        <property name="hibernate.connection.password">admin</property>
 
-    <mapping class="models.TestTable"/>
-<!--    <mapping class="com.sci.models.Car"/>-->
-    <!--    <mapping class="package.ModelClassName" />-->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.enable_lazy_load_no_trans">true</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
 
-  </session-factory>
+<!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+
+        <mapping class="models.TestTable"/>
+    </session-factory>
 </hibernate-configuration>

@@ -1,8 +1,8 @@
 package models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TestTable {
 
-  @Id
-  private Integer id;
-  private Integer age;
-  private String name;
+    @Id
+    private Integer id;
+    private String name;
+    private Integer age;
 }

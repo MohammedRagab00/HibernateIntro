@@ -10,7 +10,7 @@ public class DBTestTable {
 
   public List<TestTable> getAll() {
     try (Session session = Config.SESSION_FACTORY.openSession()) {
-      return session.createQuery("from TestTable").list();
+      return session.createQuery("from TestTable", TestTable.class).getResultList();
     } catch (Exception ex) {
       System.err.println(ex.getMessage());
       return new ArrayList<>();
