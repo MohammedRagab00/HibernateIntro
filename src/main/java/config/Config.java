@@ -9,7 +9,7 @@ public class Config {
       .buildSessionFactory();
 
   public void shutdown() {
-    if (SESSION_FACTORY != null) {
+    if (SESSION_FACTORY.isOpen()) {
       SESSION_FACTORY.close();
     }
   }
