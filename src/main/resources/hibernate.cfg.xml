@@ -25,6 +25,6 @@
         <property name="hibernate.javax.cache.missing_cache_strategy">create</property>
 
 
-        <mapping class="models.TestTable"/>
+        <mapping class="com.sci.models.TestTable"/>
     </session-factory>
 </hibernate-configuration>

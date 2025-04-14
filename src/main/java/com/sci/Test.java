@@ -1,8 +1,10 @@
-import dao.DBTestTable;
+package com.sci;
+
+import com.sci.dao.DBTestTable;
 
 import java.util.List;
 
-import models.TestTable;
+import com.sci.models.TestTable;
 
 public class Test {
 

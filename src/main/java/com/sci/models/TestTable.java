@@ -1,4 +1,4 @@
-package models;
+package com.sci.models;
 
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
