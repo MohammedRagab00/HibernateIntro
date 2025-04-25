@@ -1,27 +1,25 @@
 package com.sci.dao;
 
 import com.sci.config.DBConfig;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sci.criteria.FilterQuery;
-import com.sci.models.TestTable;
+import com.sci.models.Employee;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.annotations.processing.HQL;
 import org.hibernate.query.Query;
 
-public class DBTestTable {
+import java.util.ArrayList;
+import java.util.List;
 
-    public List<TestTable> getAll(int offset, int limit) {
+public class DBEmployee {
+
+    public List<Employee> getAll() {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from TestTable", TestTable.class)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
+            return session.createQuery("from Employee", Employee.class)
                     .getResultList();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -29,16 +27,41 @@ public class DBTestTable {
         }
     }
 
+
+    //* Retrieve the object with the given id
+    public Employee get(Integer id) {
+        try (Session session = DBConfig.getSessionFactory().openSession()) {
+            return session.get(Employee.class, id);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            return null;
+        }
+    }
+
+    //* Retrieve the object with the given id
+    public Employee getByEmail(String email) {
+        try (Session session = DBConfig.getSessionFactory().openSession()) {
+
+            return session.createQuery("from Employee WHERE email =: x", Employee.class)
+                    // x = email
+                    .setParameter("x", email)
+                    .getSingleResult();
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            return null;
+        }
+    }
+
     //* Insert the object to table and return its id
-    public Integer insert(TestTable testTable) {
+    public Integer insert(Employee Employee) {
         Transaction transaction = null;
         Integer id = null;
-
         try (Session session = DBConfig.getSessionFactory().openSession()) {
+
             transaction = session.beginTransaction();
 
-            session.persist(testTable);
-            id = testTable.getId();
+            session.persist(Employee);
+            id = Employee.getId();
 
             transaction.commit();
         } catch (Exception ex) {
@@ -47,18 +70,17 @@ public class DBTestTable {
             }
             System.err.println(ex.getMessage());
         }
-
         return id;
     }
 
     //* Update the object
-    public void update(TestTable testTable) {
+    public void update(Employee Employee) {
         Transaction transaction = null;
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            session.merge(testTable);
+            session.merge(Employee);
 
             transaction.commit();
         } catch (Exception ex) {
@@ -69,16 +91,15 @@ public class DBTestTable {
         }
     }
 
-    //* Delete the object with the given id
-    public void delete(Integer id) {
+    //* Delete the object with the given email
+    public void deleteByEmail(String email) {
         Transaction transaction = null;
-
         try (Session session = DBConfig.getSessionFactory().openSession()) {
 
-            TestTable testTable = get(id);
-            if (testTable != null) {
+            Employee emp = getByEmail(email);
+            if (emp != null) {
                 transaction = session.beginTransaction();
-                session.remove(testTable);
+                session.remove(emp);
                 transaction.commit();
             }
 
@@ -90,38 +111,48 @@ public class DBTestTable {
         }
     }
 
-    //* Retrieve the object with the given id
-    public TestTable get(Integer id) {
+    //* Delete the object with the given id
+    public void deleteById(Integer id) {
+        Transaction transaction = null;
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.find(TestTable.class, id);
+
+            Employee emp = get(id);
+            if (emp != null) {
+                transaction = session.beginTransaction();
+                session.remove(emp);
+                transaction.commit();
+            }
+
         } catch (Exception ex) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             System.err.println(ex.getMessage());
-            return null;
         }
     }
 
     //* Retrieve all object that have the given name
-    public List<TestTable> get(String name) {
+    public List<Employee> get(String name) {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            Query<TestTable> query = session.createQuery(
-                    "from TestTable where name = :name",
-                    TestTable.class
-            );
-            query.setParameter("name", name);
-            return query.getResultList();
+            return session.createQuery(
+                            "from Employee where first_name = :name_in_query",
+                            Employee.class
+                    )
+                    .setParameter("name_in_query", name)
+                    .getResultList();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             return new ArrayList<>();
         }
     }
 
-    public List<TestTable> getByFilter(List<FilterQuery> filterQueries) {
+    public List<Employee> getByFilter(List<FilterQuery> filterQueries, boolean isAnd) {
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             // To be edited in other relations CRUD OPs:
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<TestTable> cr = cb.createQuery(TestTable.class);
-            Root<TestTable> root = cr.from(TestTable.class);
+            CriteriaQuery<Employee> cr = cb.createQuery(Employee.class);
+            Root<Employee> root = cr.from(Employee.class);
 
             Predicate[] predicates = new Predicate[filterQueries.size()];
             for (int i = 0; i < filterQueries.size(); i++) {
@@ -201,9 +232,12 @@ public class DBTestTable {
                 }
             }
 
-            cr.select(root).where(predicates);
 
-            Query<TestTable> query = session.createQuery(cr);
+            Predicate predicatesss = isAnd ? cb.and(predicates) : cb.or(predicates);
+
+            cr.select(root).where(predicatesss);
+
+            Query<Employee> query = session.createQuery(cr);
             return query.getResultList();
 
         } catch (Exception ex) {

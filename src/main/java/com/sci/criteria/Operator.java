@@ -1,6 +1,6 @@
 package com.sci.criteria;
 
 public enum Operator {
-    Equal, NotEqual, GreaterThan, Between, LessThan,
+    EQ, NEQ, GT, BT, LT,
     GreaterThanOrEqual, LessThanOrEqual, In, Like, IsNull
 }

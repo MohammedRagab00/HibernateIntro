@@ -1,20 +1,11 @@
 <hibernate-configuration xmlns="http://www.hibernate.org/xsd/orm/cfg">
     <session-factory>
-<!--
-        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/test</property>
--->
-
         <property name="hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
-        <!-- Choose one -->
-<!--
-        <property name="hibernate.connection.url">jdbc:oracle:thin:@//localhost:1521/xepdb1</property>
-        <property name="connection.url">jdbc:oracle:thin:@localhost:1521:xe</property>
--->
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@//localhost:1521/freepdb1</property>
 
-        <property name="hibernate.connection.username">username</property>
-        <property name="hibernate.connection.password">password</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <property name="hibernate.connection.username">hr</property>
+        <property name="hibernate.connection.password">hr</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.highlight_sql">true</property>
 
@@ -25,6 +16,8 @@
         <property name="hibernate.javax.cache.missing_cache_strategy">create</property>
 
 
-        <mapping class="com.sci.models.TestTable"/>
+<!--        <mapping class="com.sci.models.TestTable"/>-->
+        <mapping class="com.sci.models.Employee"/>
+        <mapping class="com.sci.models.Department"/>
     </session-factory>
 </hibernate-configuration>
