@@ -4,10 +4,11 @@
         <property name="hibernate.connection.url">jdbc:oracle:thin:@//localhost:1521/freepdb1</property>
 
 
-        <property name="hibernate.connection.username">hr</property>
-        <property name="hibernate.connection.password">hr</property>
+        <property name="hibernate.connection.username">test</property>
+        <property name="hibernate.connection.password">test</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.highlight_sql">true</property>
+<!--        <property name="hibernate.hbm2ddl.auto">create</property>-->
 
         <property name="hibernate.cache.region.factory_class">org.hibernate.cache.jcache.JCacheRegionFactory</property>
         <property name="hibernate.javax.cache.provider">org.ehcache.jsr107.EhcacheCachingProvider</property>
@@ -16,8 +17,7 @@
         <property name="hibernate.javax.cache.missing_cache_strategy">create</property>
 
 
-<!--        <mapping class="com.sci.models.TestTable"/>-->
-        <mapping class="com.sci.models.Employee"/>
-        <mapping class="com.sci.models.Department"/>
+        <mapping class="com.sci.models.Author"/>
+        <mapping class="com.sci.models.Book"/>
     </session-factory>
 </hibernate-configuration>

@@ -1,12 +1,8 @@
 package com.sci.dao;
 
 import com.sci.config.DBConfig;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sci.criteria.FilterQuery;
-import com.sci.models.TestTable;
+import com.sci.models.Author;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -15,13 +11,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-public class DBTestTable {
+import java.util.ArrayList;
+import java.util.List;
 
-    public List<TestTable> getAll(int offset, int limit) {
+public class DBAuthor {
+
+    public List<Author> getAll() {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from TestTable", TestTable.class)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
+            return session.createQuery("from Author", Author.class)
                     .getResultList();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -29,36 +26,22 @@ public class DBTestTable {
         }
     }
 
-    //* Insert the object to table and return its id
-    public Integer insert(TestTable testTable) {
-        Transaction transaction = null;
-        Integer id = null;
-
+    public Author getById(Integer id) {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-
-            session.persist(testTable);
-            id = testTable.getId();
-
-            transaction.commit();
+            return session.get(Author.class, id);
         } catch (Exception ex) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.err.println(ex.getMessage());
+            return null;
         }
-
-        return id;
     }
 
-    //* Update the object
-    public void update(TestTable testTable) {
+    public void insert(Author author) {
         Transaction transaction = null;
-
         try (Session session = DBConfig.getSessionFactory().openSession()) {
+
             transaction = session.beginTransaction();
 
-            session.merge(testTable);
+            session.persist(author);
 
             transaction.commit();
         } catch (Exception ex) {
@@ -69,16 +52,31 @@ public class DBTestTable {
         }
     }
 
-    //* Delete the object with the given id
-    public void delete(Integer id) {
+    public void update(Author author) {
         Transaction transaction = null;
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
 
-            TestTable testTable = get(id);
-            if (testTable != null) {
+            session.merge(author);
+
+            transaction.commit();
+        } catch (Exception ex) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            System.err.println(ex.getMessage());
+        }
+    }
+
+    public void deleteById(Integer id) {
+        Transaction transaction = null;
+        try (Session session = DBConfig.getSessionFactory().openSession()) {
+
+            Author author = getById(id);
+            if (author != null) {
                 transaction = session.beginTransaction();
-                session.remove(testTable);
+                session.remove(author);
                 transaction.commit();
             }
 
@@ -90,38 +88,13 @@ public class DBTestTable {
         }
     }
 
-    //* Retrieve the object with the given id
-    public TestTable get(Integer id) {
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.find(TestTable.class, id);
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return null;
-        }
-    }
-
-    //* Retrieve all object that have the given name
-    public List<TestTable> get(String name) {
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-            Query<TestTable> query = session.createQuery(
-                    "from TestTable where name = :name",
-                    TestTable.class
-            );
-            query.setParameter("name", name);
-            return query.getResultList();
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    public List<TestTable> getByFilter(List<FilterQuery> filterQueries) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public List<Author> getByFilter(List<FilterQuery> filterQueries, boolean isAnd) {
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            // To be edited in other relations CRUD OPs:
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<TestTable> cr = cb.createQuery(TestTable.class);
-            Root<TestTable> root = cr.from(TestTable.class);
+            CriteriaQuery<Author> cr = cb.createQuery(Author.class);
+            Root<Author> root = cr.from(Author.class);
 
             Predicate[] predicates = new Predicate[filterQueries.size()];
             for (int i = 0; i < filterQueries.size(); i++) {
@@ -201,9 +174,11 @@ public class DBTestTable {
                 }
             }
 
-            cr.select(root).where(predicates);
+            Predicate finalPredicates = isAnd ? cb.and(predicates) : cb.or(predicates);
 
-            Query<TestTable> query = session.createQuery(cr);
+            cr.select(root).where(finalPredicates);
+
+            Query<Author> query = session.createQuery(cr);
             return query.getResultList();
 
         } catch (Exception ex) {
