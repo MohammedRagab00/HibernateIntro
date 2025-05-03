@@ -1,25 +1,27 @@
 package com.sci.dao;
 
 import com.sci.config.DBConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sci.criteria.FilterQuery;
-import com.sci.models.Employee;
+import com.sci.models.Customers;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.annotations.processing.HQL;
 import org.hibernate.query.Query;
 
-import java.util.ArrayList;
-import java.util.List;
+public class DBCustomers {
 
-public class DBEmployee {
-
-    public List<Employee> getAll() {
+    public List<Customers> getAll(int offset, int limit) {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Employee", Employee.class)
+            return session.createQuery("from Customers", Customers.class)
+                    .setFirstResult(offset)
+                    .setMaxResults(limit)
                     .getResultList();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -27,41 +29,16 @@ public class DBEmployee {
         }
     }
 
-
-    //* Retrieve the object with the given id
-    public Employee get(Integer id) {
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.get(Employee.class, id);
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return null;
-        }
-    }
-
-    //* Retrieve the object with the given id
-    public Employee getByEmail(String email) {
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-
-            return session.createQuery("from Employee WHERE email =: x", Employee.class)
-                    // x = email
-                    .setParameter("x", email)
-                    .getSingleResult();
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return null;
-        }
-    }
-
     //* Insert the object to table and return its id
-    public Integer insert(Employee Employee) {
+    public Integer insert(Customers Customers) {
         Transaction transaction = null;
         Integer id = null;
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
 
+        try (Session session = DBConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            session.persist(Employee);
-            id = Employee.getId();
+            session.persist(Customers);
+            id = Customers.getCustomer_id();
 
             transaction.commit();
         } catch (Exception ex) {
@@ -70,39 +47,20 @@ public class DBEmployee {
             }
             System.err.println(ex.getMessage());
         }
+
         return id;
     }
 
     //* Update the object
-    public void update(Employee Employee) {
+    public void update(Customers Customers) {
         Transaction transaction = null;
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            session.merge(Employee);
+            session.merge(Customers);
 
             transaction.commit();
-        } catch (Exception ex) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            System.err.println(ex.getMessage());
-        }
-    }
-
-    //* Delete the object with the given email
-    public void deleteByEmail(String email) {
-        Transaction transaction = null;
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-
-            Employee emp = getByEmail(email);
-            if (emp != null) {
-                transaction = session.beginTransaction();
-                session.remove(emp);
-                transaction.commit();
-            }
-
         } catch (Exception ex) {
             if (transaction != null) {
                 transaction.rollback();
@@ -112,14 +70,15 @@ public class DBEmployee {
     }
 
     //* Delete the object with the given id
-    public void deleteById(Integer id) {
+    public void delete(Integer id) {
         Transaction transaction = null;
+
         try (Session session = DBConfig.getSessionFactory().openSession()) {
 
-            Employee emp = get(id);
-            if (emp != null) {
+            Customers Customers = get(id);
+            if (Customers != null) {
                 transaction = session.beginTransaction();
-                session.remove(emp);
+                session.remove(Customers);
                 transaction.commit();
             }
 
@@ -131,28 +90,23 @@ public class DBEmployee {
         }
     }
 
-    //* Retrieve all object that have the given name
-    public List<Employee> get(String name) {
+    //* Retrieve the object with the given id
+    public Customers get(Integer id) {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.createQuery(
-                            "from Employee where first_name = :name_in_query",
-                            Employee.class
-                    )
-                    .setParameter("name_in_query", name)
-                    .getResultList();
+            return session.find(Customers.class, id);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
-            return new ArrayList<>();
+            return null;
         }
     }
 
-    public List<Employee> getByFilter(List<FilterQuery> filterQueries, boolean isAnd) {
+    public List<Customers> getByFilter(List<FilterQuery> filterQueries) {
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             // To be edited in other relations CRUD OPs:
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<Employee> cr = cb.createQuery(Employee.class);
-            Root<Employee> root = cr.from(Employee.class);
+            CriteriaQuery<Customers> cr = cb.createQuery(Customers.class);
+            Root<Customers> root = cr.from(Customers.class);
 
             Predicate[] predicates = new Predicate[filterQueries.size()];
             for (int i = 0; i < filterQueries.size(); i++) {
@@ -232,12 +186,9 @@ public class DBEmployee {
                 }
             }
 
+            cr.select(root).where(predicates);
 
-            Predicate predicatesss = isAnd ? cb.and(predicates) : cb.or(predicates);
-
-            cr.select(root).where(predicatesss);
-
-            Query<Employee> query = session.createQuery(cr);
+            Query<Customers> query = session.createQuery(cr);
             return query.getResultList();
 
         } catch (Exception ex) {

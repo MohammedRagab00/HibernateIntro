@@ -1,92 +1,38 @@
 package com.sci;
 
-import com.sci.config.DBConfig;
-import com.sci.criteria.FilterQuery;
-import com.sci.criteria.Operator;
-import com.sci.dao.DBEmployee;
-import com.sci.dao.DBTestTable;
+import com.sci.dao.DBCustomers;
+import com.sci.dao.DBOrders;
+import com.sci.models.Customers;
+import com.sci.models.Orders;
 
-import java.util.List;
-
-import com.sci.models.Employee;
-import com.sci.models.TestTable;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import java.time.LocalDate;
+import java.util.Date;
 
 public class Test {
 
-    public static void testCache1() {
-
-        System.out.println("Test cache scenario 1");
-
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-
-            System.out.println(session.get(Employee.class, 2));
-
-            System.out.println("--------------------------------");
-
-            System.out.println(session.get(Employee.class, 2));
-
-            System.out.println("--------------------------------");
-
-            System.out.println(session.get(Employee.class, 2));
-
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-        }
-    }
-
-    public static void testCache2() {
-
-        System.out.println("Test cache scenario 2");
-
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-
-            System.out.println(session.get(Employee.class, 103));
-
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-        }
-    }
-
     public static void main(String[] args) {
-//        DBTestTable dbTestTable = new DBTestTable();
-//        List<TestTable> res = dbTestTable.getAll(2, 2);
-//
-//        res.forEach(System.out::println);
 
-        DBEmployee dbEmployee = new DBEmployee();
-//        Employee emp = new Employee();
-//        emp.setFirst_name("mlwe");
-//        emp.setEmail("dewc");
-//        dbEmployee.insert(emp);
-//        System.out.println(emp);
+        DBCustomers dbCustomers = new DBCustomers();
 
-//        dbEmployee.delete("email");
-
-//        Employee emp2 = dbEmployee.get(100);
-//        Employee emp1 = dbEmployee.get(100);
-//        System.out.println(emp2);
-//        System.out.println(emp1);
-//        int id = dbEmployee.insert(emp);
-//        dbEmployee.delete(emp);
-
-
-
-        List<Employee> employees = dbEmployee.getByFilter(
-                List.of(
-                        new FilterQuery("id", 200, Operator.GreaterThanOrEqual),
-                        new FilterQuery("salary", 10000, Operator.EQ)
-                ),
-                true
+        Customers customer = new Customers(
+                199, "salah", "salah@mail", "0123456789", null
         );
-        for (Employee employee : employees) {
-            System.out.println(employee);
-        }
+//        dbCustomers.insert(customer);
 
 
+        DBOrders dbOrders = new DBOrders();
+
+//        dbOrders.insert(Orders.builder()
+//                .order_date(LocalDate.of(2001, 1, 1))
+//                .order_id(201)
+//                .customer(customer)
+//                .order_total(2000)
+//                .build()
+//        );
 
 
+        Orders orders = dbOrders.get(201);
+        System.out.println(orders);
 
     }
 }

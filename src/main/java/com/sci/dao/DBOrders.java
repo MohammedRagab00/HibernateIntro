@@ -1,12 +1,8 @@
 package com.sci.dao;
 
 import com.sci.config.DBConfig;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sci.criteria.FilterQuery;
-import com.sci.models.TestTable;
+import com.sci.models.Orders;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -15,11 +11,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-public class DBTestTable {
+import java.util.ArrayList;
+import java.util.List;
 
-    public List<TestTable> getAll(int offset, int limit) {
+public class DBOrders {
+
+    public List<Orders> getAll(int offset, int limit) {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from TestTable", TestTable.class)
+            return session.createQuery("from Orders", Orders.class)
                     .setFirstResult(offset)
                     .setMaxResults(limit)
                     .getResultList();
@@ -30,15 +29,15 @@ public class DBTestTable {
     }
 
     //* Insert the object to table and return its id
-    public Integer insert(TestTable testTable) {
+    public Integer insert(Orders Orders) {
         Transaction transaction = null;
         Integer id = null;
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            session.persist(testTable);
-            id = testTable.getId();
+            session.persist(Orders);
+            id = Orders.getOrder_id();
 
             transaction.commit();
         } catch (Exception ex) {
@@ -52,13 +51,13 @@ public class DBTestTable {
     }
 
     //* Update the object
-    public void update(TestTable testTable) {
+    public void update(Orders Orders) {
         Transaction transaction = null;
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            session.merge(testTable);
+            session.merge(Orders);
 
             transaction.commit();
         } catch (Exception ex) {
@@ -75,10 +74,10 @@ public class DBTestTable {
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
 
-            TestTable testTable = get(id);
-            if (testTable != null) {
+            Orders Orders = get(id);
+            if (Orders != null) {
                 transaction = session.beginTransaction();
-                session.remove(testTable);
+                session.remove(Orders);
                 transaction.commit();
             }
 
@@ -91,37 +90,22 @@ public class DBTestTable {
     }
 
     //* Retrieve the object with the given id
-    public TestTable get(Integer id) {
+    public Orders get(Integer id) {
         try (Session session = DBConfig.getSessionFactory().openSession()) {
-            return session.find(TestTable.class, id);
+            return session.find(Orders.class, id);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             return null;
         }
     }
 
-    //* Retrieve all object that have the given name
-    public List<TestTable> get(String name) {
-        try (Session session = DBConfig.getSessionFactory().openSession()) {
-            Query<TestTable> query = session.createQuery(
-                    "from TestTable where name = :name",
-                    TestTable.class
-            );
-            query.setParameter("name", name);
-            return query.getResultList();
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    public List<TestTable> getByFilter(List<FilterQuery> filterQueries) {
+    public List<Orders> getByFilter(List<FilterQuery> filterQueries) {
 
         try (Session session = DBConfig.getSessionFactory().openSession()) {
             // To be edited in other relations CRUD OPs:
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<TestTable> cr = cb.createQuery(TestTable.class);
-            Root<TestTable> root = cr.from(TestTable.class);
+            CriteriaQuery<Orders> cr = cb.createQuery(Orders.class);
+            Root<Orders> root = cr.from(Orders.class);
 
             Predicate[] predicates = new Predicate[filterQueries.size()];
             for (int i = 0; i < filterQueries.size(); i++) {
@@ -203,7 +187,7 @@ public class DBTestTable {
 
             cr.select(root).where(predicates);
 
-            Query<TestTable> query = session.createQuery(cr);
+            Query<Orders> query = session.createQuery(cr);
             return query.getResultList();
 
         } catch (Exception ex) {
